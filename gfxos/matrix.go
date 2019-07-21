@@ -17,8 +17,8 @@ type Matrix struct {
 func Open(portName string) (*Matrix, error) {
 	// Set up options.
 	options := serial.OpenOptions{
-		PortName: "COM30",
-		BaudRate: 19200,
+		PortName: portName,
+		BaudRate: 2000000,
 		DataBits: 8,
 		StopBits: 1,
 		MinimumReadSize: 4,
@@ -41,10 +41,21 @@ func (m Matrix) Close() () {
 	port := *m.SPort
 	port.Close()
 }
+
+
 func (m *Matrix) DrawPixel(x int, y int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("01%02x%02x%04x", x, y, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetRotation(r int) error {
+	err := m.write(fmt.Sprintf("02%02x", r))
 	if err != nil {
 		return err
 	}
@@ -61,8 +72,65 @@ func (m *Matrix) InvertDisplay(i int) error {
 	return nil
 }
 
-func (m *Matrix) SetRotation(r int) error {
-	err := m.write(fmt.Sprintf("02%02x", r))
+func (m *Matrix) drawFastVLine(x int, y int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("04%02x%02x%02x%04x", x, y, h, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) drawFastHLine(x int, y int, w int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("05%02x%02x%02x%04x", x, y, w, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) FillRect(x int, y int, w int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("06%02x%02x%02x%02x%04x", x, y, w, h, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) FillScreen(r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("07%04x", color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) DrawLine(x0 int, y0 int, x1 int, y1 int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("08%02x%02x%02x%02x%04x", x0, y0, x1, y1, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) drawRect(x int, y int, w int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("09%02x%02x%02x%02x%04x", x, y, w, h, color))
 	if err != nil {
 		return err
 	}

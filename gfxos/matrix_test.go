@@ -14,7 +14,7 @@ type testColor888 struct {
 }
 
 var testColor888s = []testColor888{
-	{ 255,0,0,0xfe00},
+	{ 255,0,0,0xf800},
 	{ 0,255,0,0x7e0},
 	{ 0,0,255,0x1f},
 	{ 255,255,0,0xffe0},

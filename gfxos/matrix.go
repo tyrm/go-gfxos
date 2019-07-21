@@ -2,7 +2,6 @@ package gfxos
 
 import (
 	"fmt"
-	"github.com/jacobsa/go-serial/serial"
 	"io"
 	"log"
 	"sync"
@@ -14,25 +13,10 @@ type Matrix struct {
 }
 
 
-func Open(portName string) (*Matrix, error) {
-	// Set up options.
-	options := serial.OpenOptions{
-		PortName: portName,
-		BaudRate: 2000000,
-		DataBits: 8,
-		StopBits: 1,
-		MinimumReadSize: 4,
-	}
-
-	// Open the port.
-	port, err := serial.Open(options)
-	if err != nil {
-		return nil, err
-	}
-
+func Open(port *io.ReadWriteCloser) (*Matrix, error) {
 	// Create new Matrix
 	newMatrix := Matrix{}
-	newMatrix.SPort = &port
+	newMatrix.SPort = port
 
 	return &newMatrix, nil
 }
@@ -127,10 +111,124 @@ func (m *Matrix) DrawLine(x0 int, y0 int, x1 int, y1 int, h int, r int, g int, b
 	return nil
 }
 
-func (m *Matrix) drawRect(x int, y int, w int, h int, r int, g int, b int) error {
+func (m *Matrix) DrawRect(x int, y int, w int, h int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("09%02x%02x%02x%02x%04x", x, y, w, h, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) DrawCircle(x int, y int, rad int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("0a%02x%02x%02x%04x", x, y, rad, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) FillCircle(x int, y int, rad int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("0c%02x%02x%02x%04x", x, y, rad, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) DrawTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("0e%02x%02x%02x%02x%02x%02x%04x", x0, y0, x1, y1, x2, y2, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) FillTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, h int, r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("0f%02x%02x%02x%02x%02x%02x%04x", x0, y0, x1, y1, x2, y2, color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) DrawChar(x int, y int, fr int, fg int, fb int, br int, bg int, bb int, size int, char int) error {
+	foreground_color := color888(fr, fg, fb)
+	background_color := color888(br, bg, bb)
+
+	err := m.write(fmt.Sprintf("10%02x%02x%04x%04x%02x%02x", x, y, foreground_color, background_color, size, char))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Matrix) SetCursor(x int, y int, w int) error {
+	err := m.write(fmt.Sprintf("11%02x%02x", x, y))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetTextColor(r int, g int, b int) error {
+	color := color888(r, g, b)
+
+	err := m.write(fmt.Sprintf("12%04x", color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) setTextColorBG(fr int, fg int, fb int, br int, bg int, bb int) error {
+	foreground_color := color888(fr, fg, fb)
+	background_color := color888(br, bg, bb)
+
+	err := m.write(fmt.Sprintf("13%04x%04x", foreground_color, background_color))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetTextSize(s int) error {
+	err := m.write(fmt.Sprintf("14%02x", s))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetTextWrap(w int) error {
+	err := m.write(fmt.Sprintf("15%02x", w))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) CP437(c int) error {
+	err := m.write(fmt.Sprintf("15%02x", c))
 	if err != nil {
 		return err
 	}
@@ -155,18 +253,3 @@ func (m *Matrix) write(text string) error {
 	return nil
 }
 
-func color888(r int, g int, b int) int {
-	new_r := mapRange(r, 0, 255, 0, 31)
-	new_g := mapRange(g, 0, 255, 0, 63)
-	new_b := mapRange(b, 0, 255, 0, 31)
-
-	new_g = new_g << 5
-	new_r = new_r << 11
-
-	color := new_r | new_g | new_b
-	return color
-}
-
-func mapRange(value int, fromLow int, fromHigh int, toLow int, toHigh int) int {
-	return (((value - fromLow) * (toHigh - toLow)) / (fromHigh - fromLow)) + toLow
-}

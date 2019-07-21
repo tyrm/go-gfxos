@@ -52,6 +52,24 @@ func (m *Matrix) DrawPixel(x int, y int, r int, g int, b int) error {
 	return nil
 }
 
+func (m *Matrix) InvertDisplay(i int) error {
+	err := m.write(fmt.Sprintf("03%02x", i))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetRotation(r int) error {
+	err := m.write(fmt.Sprintf("02%02x", r))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (m *Matrix) write(text string) error {
 	b := []byte(text + "\n")
 	fmt.Println(b)

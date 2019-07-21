@@ -228,7 +228,48 @@ func (m *Matrix) SetTextWrap(w int) error {
 }
 
 func (m *Matrix) CP437(c int) error {
-	err := m.write(fmt.Sprintf("15%02x", c))
+	err := m.write(fmt.Sprintf("16%02x", c))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) Print(str string) error {
+	packet := fmt.Sprintf("17%02x", len(str))
+
+	for index, runeValue := range str {
+		fmt.Printf("%#U %02x starts at byte position %d\n", runeValue, runeValue, index)
+		packet = packet + fmt.Sprintf("%02x", runeValue)
+	}
+
+	err := m.write(packet)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) PrintLn(str string) error {
+	packet := fmt.Sprintf("18%02x", len(str))
+
+	for index, runeValue := range str {
+		fmt.Printf("%#U %02x starts at byte position %d\n", runeValue, runeValue, index)
+		packet = packet + fmt.Sprintf("%02x", runeValue)
+	}
+
+	err := m.write(packet)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Matrix) SetFont(f int) error {
+	err := m.write(fmt.Sprintf("19%02x", f))
 	if err != nil {
 		return err
 	}

@@ -8,11 +8,10 @@ type testToUint struct {
 }
 
 var testToUints = []testToUint{
-	{ -128,128},
-	{ -1,255},
-	{ 0,0},
-	{ 127,127},
-
+	{-128, 128},
+	{-1, 255},
+	{0, 0},
+	{127, 127},
 }
 
 func TestToUint(t *testing.T) {

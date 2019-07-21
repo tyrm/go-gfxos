@@ -6,20 +6,20 @@ import (
 )
 
 type testColor888 struct {
-	red int
+	red   int
 	green int
-	blue int
+	blue  int
 	value int
 }
 
 var testColor888s = []testColor888{
-	{ 255,0,0,0xf800},
-	{ 0,255,0,0x7e0},
-	{ 0,0,255,0x1f},
-	{ 255,255,0,0xffe0},
-	{ 0,255,255,0x7ff},
-	{ 255,0,255,0xf81f},
-	{ 255,255,255,0xffff},
+	{255, 0, 0, 0xf800},
+	{0, 255, 0, 0x7e0},
+	{0, 0, 255, 0x1f},
+	{255, 255, 0, 0xffe0},
+	{0, 255, 255, 0x7ff},
+	{255, 0, 255, 0xf81f},
+	{255, 255, 255, 0xffff},
 }
 
 func TestColr888(t *testing.T) {

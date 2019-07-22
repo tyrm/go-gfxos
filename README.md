@@ -1,1 +1,2 @@
-# go-gfxos
+# go-gfxos [![Build Status](https://travis-ci.org/tyrm/go-gfxos.svg?branch=master)](https://travis-ci.org/tyrm/go-gfxos)
+Go library for sending commands to an arduino running [gfx_over_serial](https://github.com/tyrm/gfx_over_serial)

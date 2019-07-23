@@ -54,7 +54,7 @@ func (m *Matrix) InvertDisplay(i int) error {
 	return nil
 }
 
-func (m *Matrix) drawFastVLine(x int, y int, h int, r int, g int, b int) error {
+func (m *Matrix) DrawFastVLine(x int, y int, h int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("04%02x%02x%02x%04x", toUint(x), toUint(y), h, color))
@@ -65,7 +65,7 @@ func (m *Matrix) drawFastVLine(x int, y int, h int, r int, g int, b int) error {
 	return nil
 }
 
-func (m *Matrix) drawFastHLine(x int, y int, w int, r int, g int, b int) error {
+func (m *Matrix) DrawFastHLine(x int, y int, w int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("05%02x%02x%02x%04x", toUint(x), toUint(y), w, color))
@@ -98,7 +98,7 @@ func (m *Matrix) FillScreen(r int, g int, b int) error {
 	return nil
 }
 
-func (m *Matrix) DrawLine(x0 int, y0 int, x1 int, y1 int, h int, r int, g int, b int) error {
+func (m *Matrix) DrawLine(x0 int, y0 int, x1 int, y1 int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("08%02x%02x%02x%02x%04x", toUint(x0), toUint(y0), x1, y1, color))
@@ -142,7 +142,7 @@ func (m *Matrix) FillCircle(x int, y int, rad int, r int, g int, b int) error {
 	return nil
 }
 
-func (m *Matrix) DrawTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, h int, r int, g int, b int) error {
+func (m *Matrix) DrawTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("0e%02x%02x%02x%02x%02x%02x%04x", toUint(x0), toUint(y0), toUint(x1), toUint(y1),
@@ -154,7 +154,7 @@ func (m *Matrix) DrawTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, h 
 	return nil
 }
 
-func (m *Matrix) FillTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, h int, r int, g int, b int) error {
+func (m *Matrix) FillTriangle(x0 int, y0 int, x1 int, y1 int, x2 int, y2 int, r int, g int, b int) error {
 	color := color888(r, g, b)
 
 	err := m.write(fmt.Sprintf("0f%02x%02x%02x%02x%02x%02x%04x", toUint(x0), toUint(y0), toUint(x1), toUint(y1),
@@ -178,7 +178,7 @@ func (m *Matrix) DrawChar(x int, y int, fr int, fg int, fb int, br int, bg int, 
 	return nil
 }
 
-func (m *Matrix) SetCursor(x int, y int, w int) error {
+func (m *Matrix) SetCursor(x int, y int) error {
 	err := m.write(fmt.Sprintf("11%02x%02x", toUint(x), toUint(y)))
 	if err != nil {
 		return err
@@ -198,7 +198,7 @@ func (m *Matrix) SetTextColor(r int, g int, b int) error {
 	return nil
 }
 
-func (m *Matrix) setTextColorBG(fr int, fg int, fb int, br int, bg int, bb int) error {
+func (m *Matrix) SetTextColorBG(fr int, fg int, fb int, br int, bg int, bb int) error {
 	foreground_color := color888(fr, fg, fb)
 	background_color := color888(br, bg, bb)
 

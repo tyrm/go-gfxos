@@ -7,3 +7,11 @@ func toUint(input int) int {
 
 	return input
 }
+
+func toUint12(input int) int {
+	if input < 0 {
+		input = input + 4096
+	}
+
+	return input
+}
